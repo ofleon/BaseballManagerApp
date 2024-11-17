@@ -1,0 +1,15 @@
+﻿@page "/logout"
+@using Microsoft.AspNetCore.Authentication
+@inject NavigationManager NavigationManager
+
+
+@code {
+    [CascadingParameter]
+    public HttpContext Context { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Context.SignOutAsync("BaseballAuthScheme");
+        NavigationManager.NavigateTo("/"); //return to home or login if you need
+    }
+}

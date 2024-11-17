@@ -1,0 +1,98 @@
+﻿
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@attribute [Authorize]
+
+<!-- Sidebar -->
+<div class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+    <nav>
+        <!-- Sidebar - Brand -->
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+            <div class="sidebar-brand-icon rotate-n-15">
+                <i class="fas fa-baseball-ball"></i>
+            </div>
+            <div class="sidebar-brand-text mx-3">BaseballM</div>
+        </a>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider my-0">
+
+        <!-- Nav Item - Dashboard -->
+        <div class="nav-item active">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </NavLink>
+        </div>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider">
+
+        <AuthorizeView>
+            <Authorized>
+
+                <!-- Heading -->
+                <div class="sidebar-heading">
+                    Games
+                </div>
+
+                <div class="nav-item">
+                    <a class="nav-link" href="javascript:;">
+                        <i class="fas fa-fw fa-tachometer-alt"></i>
+                        <span>Schedule</span>
+                    </a>
+                </div>
+
+                <div class="nav-item">
+                    <a class="nav-link" href="javascript:;">
+                        <i class="fas fa-fw fa-chart-area"></i>
+                        <span>Statistics</span>
+                    </a>
+                </div>
+
+                <!-- Divider -->
+                <hr class="sidebar-divider">
+
+                <!-- Heading -->
+                <div class="sidebar-heading">
+                    Administration
+                </div>
+
+                <!-- Nav Item - Charts -->
+                <div class="nav-item">
+                    <a class="nav-link" href="logout">
+                        <i class="fas fa-fw fa-chart-area"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </Authorized>
+            <NotAuthorized>
+
+                <!-- Nav Item - Charts -->
+                <div class="nav-item">
+                    <a class="nav-link" href="login">
+                        <i class="fas fa-fw fa-chart-area"></i>
+                        <span>Login</span>
+                    </a>
+                </div>
+
+            </NotAuthorized>
+        </AuthorizeView>
+    </nav>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider d-none d-md-block">
+
+    <!-- Sidebar Toggler (Sidebar) -->
+    <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+
+    <!-- Sidebar Message -->
+    <div class="sidebar-card d-none d-lg-flex">
+        <img class="sidebar-card-illustration mb-2" src="img/undraw_rocket.svg" alt="...">
+        <p class="text-center mb-2"><strong>Baseball Manager</strong> is an app for education proposal, practice, and more!</p>
+    </div>
+
+</div>
+<!-- End of Sidebar -->

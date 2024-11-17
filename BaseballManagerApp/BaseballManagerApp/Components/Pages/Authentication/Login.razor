@@ -1,0 +1,118 @@
+﻿@page "/login"
+@using BaseballManagerApp.Identity
+@using BaseballManagerApp.Components.Layout
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+@inject UserManager<ApplicationUser> userManager
+@inject NavigationManager NavigationManager
+@layout AuthLayout
+
+
+<div class="container">
+    <!-- Outer Row -->
+    <div class="row justify-content-center">
+        <div class="col-xl-10 col-lg-12 col-md-9">
+            <div class="card o-hidden border-0 shadow-lg my-5">
+                <div class="card-body p-0">
+                    <!-- Nested Row within Card Body -->
+                    <div class="row">
+                        <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
+                        <div class="col-lg-6">
+                            <div class="p-5">
+                                <div class="text-center">
+                                    <h1 class="h4 text-gray-900 mb-4">Welcome to Baseball App, Login to play Ball!</h1>
+                                </div>
+                                @if (!string.IsNullOrEmpty(ErrorMessage))
+                                {
+                                    <div class="alert alert-danger">
+                                        @ErrorMessage
+                                    </div>
+                                }
+                                <EditForm class="user" Model="UserRequest" method="post" OnValidSubmit="AuthenticateAsync" FormName="login">
+                                    <DataAnnotationsValidator />
+                                    <div class="form-group">
+                                        <InputText type="email" class="form-control form-control-user"
+                                               id="Email" aria-describedby="emailHelp"
+                                               @bind-Value="UserRequest.Email"
+                                               placeholder="Enter Email Address...">
+                                        </InputText>
+                                        <ValidationMessage For="() => UserRequest.Email" class="text-danger" />
+                                    </div>
+                                    <div class="form-group">
+                                        <InputText type="password" class="form-control form-control-user"
+                                                   id="Password" placeholder="Password" @bind-Value="UserRequest.Password">
+                                        </InputText>
+                                        <ValidationMessage For="() => UserRequest.Password" class="text-danger" />
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="custom-control custom-checkbox small">
+                                            <input type="checkbox" class="custom-control-input" id="customCheck" @bind-value="UserRequest.RememberMe">
+                                            <label class="custom-control-label" for="customCheck">
+                                                Remember
+                                                Me
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-user btn-block">
+                                        Login
+                                    </button>
+                                </EditForm>
+                                <hr>
+                                <div class="text-center">
+                                    <a class="small" href="register">Create an Account!</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private UserRequest UserRequest { get; set; } = new();
+
+    [CascadingParameter]
+    public HttpContext Context { get; set; } = null!;
+
+    private string? ErrorMessage = "";
+
+    private async Task AuthenticateAsync()
+    {
+        var user = await userManager.FindByEmailAsync(UserRequest.Email);
+
+        if (user is null)
+        {
+            ErrorMessage = "Invalid User";
+        }
+        else
+        {
+
+            var auth = await userManager.CheckPasswordAsync(user, UserRequest.Password);
+
+            if (!auth)
+            {
+                ErrorMessage = "Authentication failed";
+            }
+            else
+            {
+                List<Claim> claims = [
+                    new Claim(ClaimTypes.NameIdentifier, user.Id),
+                    new Claim(ClaimTypes.Email, user.Email!),
+                    new Claim(ClaimTypes.Name, user.Name!)
+                ];
+
+                var claimsIdentity = new ClaimsIdentity(claims, "BaseballAuthScheme");
+                var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+                AuthenticationProperties properties = new() { IsPersistent = UserRequest.RememberMe };
+
+                await Context.SignInAsync("BaseballAuthScheme", claimsPrincipal, properties);
+                NavigationManager.NavigateTo("/"); //return to home or the page you need to
+            }
+        }
+    }
+}
